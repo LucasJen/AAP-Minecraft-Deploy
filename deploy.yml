@@ -1,0 +1,29 @@
+---
+- name: Deploy Minecraft Server
+  hosts: minecraft-servers
+  tasks: 
+    - name: Install Packages
+      ansible.builtin.dnf:
+        name: java-21-openjdk-devel
+        state: present
+      become: true
+
+    - name: Minecraft Directory
+      ansible.builtin.file:
+        name: /opt/minecraft
+        state: directory
+        mode: 0755
+      become: true
+
+    - name: Download Minecraft Server
+      ansible.builtin.get_url:
+        url: https://piston-data.mojang.com/v1/objects/6bce4ef400e4efaa63a13d5e6f6b500be969ef81/server.jar
+        dest: /opt/minecraft/server.jar
+      become: true
+
+    - name: Generate Server files
+      ansible.builtin.shell:
+        cmd: java -jar /opt/minecraft/server.jar --nogui
+        chdir: /opt/minecraft
+      become: true
+      
